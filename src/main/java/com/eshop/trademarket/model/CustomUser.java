@@ -20,8 +20,6 @@ import javax.persistence.Table;
 @Table(name = "CUSTOM_USER")
 public class CustomUser implements UserDetails {
 	
-	
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
