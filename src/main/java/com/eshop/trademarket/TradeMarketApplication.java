@@ -1,4 +1,4 @@
-package com.eshop.TradeMarket;
+package com.eshop.trademarket;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
