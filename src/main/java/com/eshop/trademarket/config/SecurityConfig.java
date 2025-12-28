@@ -32,7 +32,7 @@ public class SecurityConfig {
             .authorizeRequests()
             .antMatchers("/login","/logout").permitAll() 
             .antMatchers("/api-ui/**", "/api/**").permitAll() 
-            .antMatchers("/shop/**").hasRole("SHOPKEEPER")
+            .antMatchers("/shop/**").hasRole("USER")
             .antMatchers("/home/**").hasAnyRole("USER","SHOPKEEPER")
             .anyRequest().authenticated()
             .and()

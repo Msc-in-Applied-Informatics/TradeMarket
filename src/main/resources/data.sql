@@ -1,2 +1,2 @@
-INSERT IGNORE INTO custom_user (username, password)
-VALUES ('user','123456');
+INSERT INTO USER (username, password, role)
+VALUES ('user','123456', 'USER');

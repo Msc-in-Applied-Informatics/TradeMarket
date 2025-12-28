@@ -17,7 +17,7 @@ import javax.persistence.Table;
 
 
 @Entity
-@Table(name = "CUSTOM_USER")
+@Table(name = "ACCOUNTS")
 public class CustomUser implements UserDetails {
 	
     @Id
@@ -28,6 +28,11 @@ public class CustomUser implements UserDetails {
     private String username;
 
     private String password;
+    private String role;
+    
+    public String getRole() { return role; }
+    public void setRole(String role) { this.role = role; }
+    public Long getId() {return id; }
 
 
     @Override
