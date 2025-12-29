@@ -30,7 +30,7 @@ public class SecurityConfig {
         http
             .csrf().disable()
             .authorizeRequests()
-            .antMatchers("/login","/logout").permitAll() 
+            .antMatchers("/login","/logout","/register/**").permitAll() 
             .antMatchers("/api-ui/**", "/api/**").permitAll() 
             .antMatchers("/shop/**").hasRole("USER")
             .antMatchers("/home/**").hasAnyRole("USER","SHOPKEEPER")

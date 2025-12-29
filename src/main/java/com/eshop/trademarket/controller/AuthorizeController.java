@@ -1,27 +1,24 @@
 package com.eshop.trademarket.controller;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.eshop.trademarket.model.CustomUser;
+import com.eshop.trademarket.model.Account;
+import com.eshop.trademarket.model.Citizen;
+import com.eshop.trademarket.model.Shop;
+import com.eshop.trademarket.model.User;
 import com.eshop.trademarket.service.AuthService;
 
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 public class AuthorizeController {
 	
@@ -42,7 +39,7 @@ public class AuthorizeController {
     }
 	
 	@PostMapping("/login")
-	public ResponseEntity<Map<String, Object>> authenticate(@RequestBody  CustomUser credentials) throws Exception {
+	public ResponseEntity<Map<String, Object>> authenticate(@RequestBody  Account credentials) throws Exception {
 		Map<String, Object> result = authService.authenticateUser(
 				credentials.getUsername(), 
 				credentials.getPassword()
@@ -55,6 +52,18 @@ public class AuthorizeController {
 	@PostMapping("/logout")
 	public ResponseEntity<Map<String, Object>> logout(HttpServletRequest request, HttpServletResponse response) {
 		Map<String, Object> result = authService.logoutUser(request, response);
+	    return ResponseEntity.status((int) result.get("code")).body(result);
+	}
+	
+	@PostMapping("/register/citizen")
+	public ResponseEntity<Map<String, Object>> registerAsCitizen(@RequestBody Citizen citizen) {
+		Map<String, Object> result = authService.registerAsCitizen(citizen);
+	    return ResponseEntity.status((int) result.get("code")).body(result);
+	}
+	
+	@PostMapping("/register/shop")
+	public ResponseEntity<Map<String, Object>> registerAsShop(@RequestBody Shop shop) {
+		Map<String, Object> result = authService.registerAsShop(shop);
 	    return ResponseEntity.status((int) result.get("code")).body(result);
 	}
 }
