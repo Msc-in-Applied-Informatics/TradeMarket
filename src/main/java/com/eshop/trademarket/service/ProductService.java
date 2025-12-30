@@ -1,5 +1,6 @@
 package com.eshop.trademarket.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,10 +23,13 @@ public class ProductService {
 	@Autowired
 	private ProductRepository prodRepo;
 	
-	public Map<String,Object> getProduct(){
+	public Map<String,Object> getProducts(String shopAfm){
 		Map<String, Object> response = new HashMap<>();
 		try {
-			List<Product> products = prodRepo.findAll();
+			List<Product> products = new ArrayList();
+			for(Product prod : prodRepo.findAll()) {
+				if (prod.getShop().getAfm().equals(shopAfm)) products.add(prod);
+			}
 			response.put("status", "success");
             response.put("code", 200);
             response.put("message", "All the products are here");
@@ -40,6 +44,26 @@ public class ProductService {
             response.put("message", "Internal server error");
         }
 		return response;		
+	}
+	
+	public Map<String,Object> getProduct(Long id){
+		Map<String, Object> response = new HashMap<>();
+		try {
+			Optional<Product> product = prodRepo.findById(id);
+			response.put("status", "success");
+            response.put("code", 200);
+            response.put("message", "There is product with id" + id.toString());
+            response.put("data", product);
+		} catch (AuthenticationException e) {
+            response.put("status", "error");
+            response.put("code", 400);
+            response.put("message", "Bad request");
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("code", 500);
+            response.put("message", "Internal server error");
+        }
+		return response;
 	}
 	
 	public  Map<String, Object> addProduct(ProductDTO p){
@@ -113,6 +137,43 @@ public class ProductService {
 	        response.put("code", 500);
 	        response.put("message", "Internal server error");
 	    }
+		return response;
+	}
+	
+	public Map<String,Object> removeProduct(ProductDTO p){
+		Map<String, Object> response = new HashMap<>();
+		try {  
+	  		Optional<Product> byId = prodRepo.findById(p.getId());
+	  		if (byId.isPresent()) {
+	  			Product existingProduct = byId.get();
+	  			if (!existingProduct.getShop().getAfm().equals(p.getShopAfm())) {
+	  				response.put("status", "error");
+	                response.put("code", 403);
+	                response.put("message", "You cannot remove a product that belongs to another shop!");
+	                return response;
+	  			}
+		 		prodRepo.delete(existingProduct);
+		 		
+	            response.put("status", "success");
+	            response.put("code", 200);
+	            response.put("message", "Product deleted");
+	            response.put("data", p); 	
+		 	}else {
+		 		response.put("status", "error");
+	            response.put("code", 401);
+	            response.put("message", "Product not found with ID: " + p.getId());
+	            response.put("data", p); 
+		 	}
+	    } catch (AuthenticationException e) {
+	        response.put("status", "error");
+	        response.put("code", 400);
+	        response.put("message", "Bad request");
+	    } catch (Exception e) {
+	        response.put("status", "error");
+	        response.put("code", 500);
+	        response.put("message", "Internal server error");
+	    }
+		
 		return response;
 	}
 

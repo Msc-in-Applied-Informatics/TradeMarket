@@ -4,11 +4,14 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Shop  extends User{
 	private String owner;
 	
 	@OneToMany(mappedBy="shop")
+	@JsonIgnore
 	private List<Product> products;
 	
 	public Shop() {

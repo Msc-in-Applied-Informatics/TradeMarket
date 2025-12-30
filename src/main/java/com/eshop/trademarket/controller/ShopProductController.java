@@ -5,7 +5,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,9 +22,17 @@ public class ShopProductController {
 	@Autowired
 	private ProductService productService;
 	
-	@GetMapping("/product")
-	public ResponseEntity<Map<String, Object>> getProduct() throws Exception {
-		Map<String, Object> result = productService.getProduct();
+	@GetMapping("/product/getProducts/{shopAfm}")
+	public ResponseEntity<Map<String, Object>> getProducts(@PathVariable(value="shopAfm") String shopAfm) throws Exception {
+		Map<String, Object> result = productService.getProducts(shopAfm);
+
+        int code = (int) result.get("code");
+        return ResponseEntity.status(code).body(result);
+	}
+	
+	@GetMapping("/product/getProduct/{id}")
+	public ResponseEntity<Map<String, Object>> getProduct(@PathVariable(value="id") Long id) throws Exception {
+		Map<String, Object> result = productService.getProduct(id);
 
         int code = (int) result.get("code");
         return ResponseEntity.status(code).body(result);
@@ -39,6 +49,14 @@ public class ShopProductController {
 	@PutMapping("/product/update")
 	public ResponseEntity<Map<String, Object>> updateProduct(@RequestBody ProductDTO product) throws Exception {
 		Map<String, Object> result = productService.updateProduct(product);
+
+        int code = (int) result.get("code");
+        return ResponseEntity.status(code).body(result);
+	}
+	
+	@DeleteMapping("/product/remove")
+	public ResponseEntity<Map<String, Object>> removeProduct(@RequestBody ProductDTO product) throws Exception {
+		Map<String, Object> result = productService.removeProduct(product);
 
         int code = (int) result.get("code");
         return ResponseEntity.status(code).body(result);
