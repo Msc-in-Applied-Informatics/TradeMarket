@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.AuthenticationException;
@@ -176,6 +177,34 @@ public class ProductService {
 		
 		return response;
 	}
+	
+	public Map<String, Object> searchProducts(String type, String brand, Double minPrice, Double maxPrice) {
+		Map<String, Object> response = new HashMap<>();
+		try {
+			List<Product> allProducts = prodRepo.findAll();
+			List<Product> searchProd = new ArrayList();
+			searchProd = allProducts.stream().filter(p -> (type == null || type.isEmpty() || p.getType().equalsIgnoreCase(type)))
+						        .filter(p -> (brand == null || brand.isEmpty() || p.getBrand().equalsIgnoreCase(brand)))
+						        .filter(p -> (minPrice == null || p.getPrice() >= minPrice))
+						        .filter(p -> (maxPrice == null || p.getPrice() <= maxPrice))
+						        .collect(Collectors.toList());
+			
+			response.put("status", "success");
+            response.put("code", 200);
+            response.put("message", "Look for products with options");
+            response.put("data", searchProd);
+		} catch (AuthenticationException e) {
+            response.put("status", "error");
+            response.put("code", 400);
+            response.put("message", "Bad request");
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("code", 500);
+            response.put("message", "Internal server error");
+        }
+
+		return response;
+	}
 
 	private boolean productIsExist(ProductDTO p) {
 		List<Product> allProducts = prodRepo.findAll();
@@ -184,6 +213,8 @@ public class ProductService {
 	        product.getBrand().equalsIgnoreCase(p.getBrand())
 	    );
 	}
+
+
 	
 	
 	

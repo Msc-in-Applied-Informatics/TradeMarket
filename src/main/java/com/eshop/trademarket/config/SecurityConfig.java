@@ -39,7 +39,7 @@ public class SecurityConfig {
             .antMatchers("/login","/register/**").permitAll() 
             .antMatchers("/api-ui/**", "/api/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll() 
             .antMatchers("/product/**","/status/**").hasRole("SHOP")
-            .antMatchers("/home/**","/logout").hasAnyRole("CITIZEN","SHOP")
+            .antMatchers("/home/**","/logout","/search").hasAnyRole("CITIZEN","SHOP")
             .anyRequest().authenticated()
             .and()
             .exceptionHandling()
