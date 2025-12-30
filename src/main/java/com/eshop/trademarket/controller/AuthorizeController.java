@@ -12,8 +12,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.eshop.trademarket.DTO.UserDTO;
 import com.eshop.trademarket.model.Citizen;
-import com.eshop.trademarket.model.Credential;
 import com.eshop.trademarket.model.Shop;
 import com.eshop.trademarket.model.User;
 import com.eshop.trademarket.service.AuthService;
@@ -41,7 +42,7 @@ public class AuthorizeController {
 	}
 	
 	@PostMapping("/login")
-	public ResponseEntity<Map<String, Object>> authenticate(@RequestBody Credential credentials) throws Exception {
+	public ResponseEntity<Map<String, Object>> authenticate(@RequestBody UserDTO credentials) throws Exception {
 		System.out.println("DEBUG: Attempting login for AFM: [" + credentials.getUsername() + "]");
         System.out.println("DEBUG: Attempting login with Password: [" + credentials.getPassword() + "]");
 		Map<String, Object> result = authService.authenticateUser(

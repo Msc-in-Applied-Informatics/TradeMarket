@@ -1,10 +1,10 @@
-package com.eshop.trademarket.model;
+package com.eshop.trademarket.DTO;
 
-public class Credential {
+public class UserDTO {
 	 private String username;
 	 private String password;
 	 
-	public Credential(String username, String password) {
+	public UserDTO(String username, String password) {
 		this.username = username;
 		this.password = password;
 	}

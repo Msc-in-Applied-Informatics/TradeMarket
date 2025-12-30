@@ -2,6 +2,8 @@ package com.eshop.trademarket.model;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Product {
 
@@ -17,7 +19,10 @@ public class Product {
 	
 	@ManyToOne
 	@JoinColumn(name = "shop_afm")
+	@JsonIgnore
 	private Shop shop;
+	
+	public Product() {}
 	
 	public Product(String type, String brand, String description, double price, int stock, Shop shop) {
 		this.type = type;
@@ -27,6 +32,7 @@ public class Product {
 		this.stock = stock;
 		this.shop = shop;
 	}
+
 
 	public Long getId() {
 		return id;
