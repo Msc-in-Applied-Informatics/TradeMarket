@@ -1,10 +1,10 @@
 package com.eshop.trademarket.model;
 
-public class Credencial {
+public class Credential {
 	 private String username;
 	 private String password;
 	 
-	public Credencial(String username, String password) {
+	public Credential(String username, String password) {
 		this.username = username;
 		this.password = password;
 	}

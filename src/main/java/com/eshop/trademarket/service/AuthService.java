@@ -16,10 +16,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Service;
 
-import com.eshop.trademarket.model.Account;
 import com.eshop.trademarket.model.Cart;
 import com.eshop.trademarket.model.Citizen;
 import com.eshop.trademarket.model.Shop;
+import com.eshop.trademarket.model.User;
 import com.eshop.trademarket.repository.CitizenRepository;
 import com.eshop.trademarket.repository.ShopRepository;
 
@@ -34,18 +34,22 @@ public class AuthService {
 
     public Map<String, Object> authenticateUser(String username, String password) {
         Map<String, Object> response = new HashMap<>();
+        
+//        System.out.println("DEBUG: Attempting login for AFM: [" + username + "]");
+//        System.out.println("DEBUG: Attempting login with Password: [" + password + "]");
 
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(username, password)
             );
 
-            Account user = (Account) authentication.getPrincipal();
             SecurityContextHolder.getContext().setAuthentication(authentication);
+            User user = (User) authentication.getPrincipal();
 
             response.put("status", "success");
             response.put("code", 200);
             response.put("message", "Login successful");
+            response.put("role", user.getRole());
             response.put("data", user); 
             
         } catch (AuthenticationException e) {
@@ -85,7 +89,7 @@ public class AuthService {
         Map<String, Object> response = new HashMap<>();
 
         try {
-        	if (checkIfAfmExists(citizen.getAFM())) {
+        	if (checkIfAfmExists(citizen.getAfm())) {
                 response.put("status", "error");
                 response.put("code", 400);
                 response.put("message", "User with this AFM already exists");
@@ -112,7 +116,7 @@ public class AuthService {
         Map<String, Object> response = new HashMap<>();
 
         try {
-        	if (checkIfAfmExists(shop.getAFM())) {
+        	if (checkIfAfmExists(shop.getAfm())) {
                 response.put("status", "error");
                 response.put("code", 400);
                 response.put("message", "A user or shop with this AFM already exists");

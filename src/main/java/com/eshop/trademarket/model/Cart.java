@@ -4,12 +4,15 @@ import java.util.List;
 
 import javax.persistence.*;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 public class Cart {
 	@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+	@JsonIgnore
     @OneToOne(mappedBy = "cart")
     private Citizen citizen;
 

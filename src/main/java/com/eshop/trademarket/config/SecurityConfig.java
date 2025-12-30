@@ -31,10 +31,20 @@ public class SecurityConfig {
             .csrf().disable()
             .authorizeRequests()
             .antMatchers("/login","/logout","/register/**").permitAll() 
-            .antMatchers("/api-ui/**", "/api/**").permitAll() 
-            .antMatchers("/shop/**").hasRole("USER")
-            .antMatchers("/home/**").hasAnyRole("USER","SHOPKEEPER")
+            .antMatchers("/api-ui/**", "/api/**", "/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll() 
+            .antMatchers("/shop/**","/status/**").hasRole("SHOP")
+            .antMatchers("/home/**").hasAnyRole("USER","SHOP")
             .anyRequest().authenticated()
+            .and()
+            .exceptionHandling()
+            .authenticationEntryPoint((request, response, authException) -> {
+                // user is not logged in (401 Unauthorized)
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized - Login Required");
+            })
+            .accessDeniedHandler((request, response, accessDeniedException) -> {
+                // User with wrong Role (403 Forbidden)
+                response.sendError(HttpServletResponse.SC_FORBIDDEN, "Forbidden - Insufficient Permissions");
+            })
             .and()
             .logout().disable()
             .httpBasic();
