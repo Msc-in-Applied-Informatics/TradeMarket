@@ -47,6 +47,7 @@ public class ShoppingService {
 		Optional<Citizen> citizen = citizenRepo.findById(afm);
 		Optional<Product> product = prodRepo.findById(productId);
 		
+		
 	
 		
 		try {
@@ -62,6 +63,13 @@ public class ShoppingService {
 				response.put("message", "Product out of stock");
 		        response.put("code", 402);
 		        return response;
+			}
+			
+			if(!citizen.isPresent()) {
+				response.put("status", "error");
+				response.put("message", "There is no citizen with afm: " + afm);
+		        response.put("code", 403);
+				return response;
 			}
 			
 			Cart cart = citizen.get().getCart();
@@ -211,4 +219,31 @@ public class ShoppingService {
 	    return response;
 	}
 
+
+	public Map<String, Object> getCart(String afm) {
+	    Map<String, Object> response = new HashMap<>();
+	    Optional<Citizen> citizen = citizenRepo.findById(afm);
+
+	    if (!citizen.isPresent()) {
+	        response.put("status", "error");
+	        response.put("message", "Citizen not found");
+	        response.put("code", 404);
+	        return response;
+	    }
+
+	    Cart cart = citizen.get().getCart();
+	    
+	    
+	    if (cart == null) {
+	        response.put("status", "error");
+	        response.put("message", "No cart associated with this citizen");
+	        response.put("code", 404);
+	        return response;
+	    }
+
+	    response.put("status", "success");
+	    response.put("code", 200);
+	    response.put("data", cart);
+	    return response;
+	}
 }
