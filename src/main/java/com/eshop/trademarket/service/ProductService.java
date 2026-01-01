@@ -24,6 +24,45 @@ public class ProductService {
 	@Autowired
 	private ProductRepository prodRepo;
 	
+	public Map<String,Object> getAllProducts(){
+		Map<String, Object> response = new HashMap<>();
+		try {
+			List<Product> products = prodRepo.findAll();
+			List<Map<String, Object>> productsWithShopNames = products.stream().map(product -> {
+	            Map<String, Object> pMap = new HashMap<>();
+	            pMap.put("id", product.getId());
+	            pMap.put("brand", product.getBrand());
+	            pMap.put("type", product.getType());
+	            pMap.put("price", product.getPrice());
+	            pMap.put("description", product.getDescription());
+	            pMap.put("stock", product.getStock());
+	            pMap.put("shopAfm", product.getShop().getAfm());
+	            pMap.put("shopName", product.getShop().getName());
+	            
+	            return pMap;
+	        }).collect(Collectors.toList());
+			if (productsWithShopNames.isEmpty()) {
+				response.put("status", "error");
+	            response.put("code", 401);
+	            response.put("message", "Products are empty");
+	            return response;
+			}
+			response.put("status", "success");
+            response.put("code", 200);
+            response.put("message", "All the products are here");
+            response.put("data", productsWithShopNames);
+		} catch (AuthenticationException e) {
+            response.put("status", "error");
+            response.put("code", 400);
+            response.put("message", "Bad request");
+        } catch (Exception e) {
+            response.put("status", "error");
+            response.put("code", 500);
+            response.put("message", "Internal server error");
+        }
+		return response;		
+	}
+	
 	public Map<String,Object> getProducts(String shopAfm){
 		Map<String, Object> response = new HashMap<>();
 		try {

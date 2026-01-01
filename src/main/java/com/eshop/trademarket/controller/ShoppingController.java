@@ -15,7 +15,7 @@ import com.eshop.trademarket.DTO.CartDTO;
 import com.eshop.trademarket.DTO.CheckOutDTO;
 import com.eshop.trademarket.service.ShoppingService;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @RestController
 public class ShoppingController {
 	

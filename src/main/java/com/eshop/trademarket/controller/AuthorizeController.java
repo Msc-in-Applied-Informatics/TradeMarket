@@ -19,7 +19,7 @@ import com.eshop.trademarket.model.Shop;
 import com.eshop.trademarket.model.User;
 import com.eshop.trademarket.service.AuthService;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @RestController
 public class AuthorizeController {
 	

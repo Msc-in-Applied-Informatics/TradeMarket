@@ -19,11 +19,19 @@ import com.eshop.trademarket.DTO.ProductDTO;
 import com.eshop.trademarket.model.Product;
 import com.eshop.trademarket.service.ProductService;
 
-@CrossOrigin(origins = "*", allowedHeaders = "*")
+@CrossOrigin(origins = "http://localhost:4200", allowCredentials = "true")
 @RestController
 public class ProductController {
 	@Autowired
 	private ProductService productService;
+	
+	@GetMapping("/product/getProducts")
+	public ResponseEntity<Map<String, Object>> getProductsAllProducts() throws Exception {
+		Map<String, Object> result = productService.getAllProducts();
+
+        int code = (int) result.get("code");
+        return ResponseEntity.status(code).body(result);
+	}
 	
 	@GetMapping("/product/getProducts/{shopAfm}")
 	public ResponseEntity<Map<String, Object>> getProducts(@PathVariable(value="shopAfm") String shopAfm) throws Exception {
