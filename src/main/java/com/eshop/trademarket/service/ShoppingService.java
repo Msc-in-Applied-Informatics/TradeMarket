@@ -42,59 +42,59 @@ public class ShoppingService {
 	private OrderItemRepository orderItemRepo;
 
 	
-	public Map<String,Object>  addToCart(Long productId, String afm) {
-		Map<String, Object> response = new HashMap<>();
-		Optional<Citizen> citizen = citizenRepo.findById(afm);
-		Optional<Product> product = prodRepo.findById(productId);
-		
-		
-	
-		
-		try {
-			if (!product.isPresent()) {
-				response.put("status", "error");
-				response.put("message", "Product not found");
-		        response.put("code", 401);
-				return response;
-			}
-			
-			if( product.get().getStock() == 0) {
-				response.put("status", "error");
-				response.put("message", "Product out of stock");
-		        response.put("code", 402);
-		        return response;
-			}
-			
-			if(!citizen.isPresent()) {
-				response.put("status", "error");
-				response.put("message", "There is no citizen with afm: " + afm);
-		        response.put("code", 403);
-				return response;
-			}
-			
-			Cart cart = citizen.get().getCart();
-		    cart.getProducts().add(product.get());
-		    cart.setTotalPrice(cart.getTotalPrice() + product.get().getPrice());
-		    
-		    cartRepo.save(cart);
-		   
-			response.put("status", "success");
-            response.put("code", 200);
-            response.put("message", "Product added to cart");
-            response.put("data", cart);            
-		} catch (AuthenticationException e) {
-            response.put("status", "error");
-            response.put("code", 400);
-            response.put("message", "Bad request");
-        } catch (Exception e) {
-            response.put("status", "error");
-            response.put("code", 500);
-            response.put("message", "Internal server error");
-        }
-		
-		return response;
-	}
+	public Map<String, Object> addToCart(Long productId, String afm) {
+	    Map<String, Object> response = new HashMap<>();
+	    Optional<Citizen> citizen = citizenRepo.findById(afm);
+	    Optional<Product> productOpt = prodRepo.findById(productId);
 
+	    try {
+	        if (!productOpt.isPresent()) {
+	            response.put("status", "error");
+	            response.put("message", "Product not found");
+	            response.put("code", 401);
+	            return response;
+	        }
+
+	        Product product = productOpt.get();
+	        
+	        if (!citizen.isPresent()) {
+	            response.put("status", "error");
+	            response.put("message", "There is no citizen with afm: " + afm);
+	            response.put("code", 403);
+	            return response;
+	        }
+
+	        Cart cart = citizen.get().getCart();
+
+	        Long currentCountInCart = cart.getProducts().stream()
+	                .filter(p -> p.getId().equals(productId))
+	                .count();
+
+	  
+	        if (currentCountInCart + 1 > product.getStock()) {
+	            response.put("status", "error");
+	            response.put("message", "Δεν υπάρχει επαρκές απόθεμα (Διαθέσιμα: " + product.getStock() + ")");
+	            response.put("code", 405); 
+	            return response;
+	        }
+	        cart.getProducts().add(product);
+	        cart.setTotalPrice(cart.getTotalPrice() + product.getPrice());
+	        
+	        cartRepo.save(cart);
+	       
+	        response.put("status", "success");
+	        response.put("code", 200);
+	        response.put("message", "Product added to cart");
+	        response.put("data", cart);            
+	        
+	    } catch (Exception e) {
+	        response.put("status", "error");
+	        response.put("code", 500);
+	        response.put("message", "Internal server error");
+	    }
+	    
+	    return response;
+	}
 
 	public Map<String,Object> purchase(String afm) {
 		Map<String, Object> response = new HashMap<>();
@@ -244,6 +244,54 @@ public class ShoppingService {
 	    response.put("status", "success");
 	    response.put("code", 200);
 	    response.put("data", cart);
+	    return response;
+	}
+
+
+	public Map<String, Object> removeFromCart(Long productId, String afm) {
+	    Map<String, Object> response = new HashMap<>();
+	    Optional<Citizen> citizen = citizenRepo.findById(afm);
+	    
+	    try {
+	        if (!citizen.isPresent()) {
+	            response.put("status", "error");
+	            response.put("message", "Citizen not found");
+	            response.put("code", 403);
+	            return response;
+	        }
+
+	        Cart cart = citizen.get().getCart();
+	        List<Product> products = cart.getProducts();
+	        
+	        Optional<Product> productInCart = products.stream()
+	                .filter(p -> p.getId().equals(productId))
+	                .findFirst();
+
+	        if (productInCart.isPresent()) {
+	            Product p = productInCart.get();
+	            
+	            products.remove(p);
+	            double newTotal = cart.getTotalPrice() - p.getPrice();
+	            cart.setTotalPrice(Math.max(0, newTotal));
+	            
+	            cartRepo.save(cart);
+
+	            response.put("status", "success");
+	            response.put("code", 200);
+	            response.put("message", "Product removed from cart");
+	            response.put("data", cart);
+	        } else {
+	            response.put("status", "error");
+	            response.put("message", "Product not found in cart");
+	            response.put("code", 404);
+	        }
+	        
+	    } catch (Exception e) {
+	        response.put("status", "error");
+	        response.put("code", 500);
+	        response.put("message", "Internal server error");
+	    }
+	    
 	    return response;
 	}
 }

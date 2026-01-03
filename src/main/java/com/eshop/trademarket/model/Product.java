@@ -16,6 +16,7 @@ public class Product {
 	private String description;
 	private double price;
 	private int stock;
+	private boolean active = true;
 	
 	@ManyToOne
 	@JoinColumn(name = "shop_afm")
@@ -31,8 +32,17 @@ public class Product {
 		this.price = price;
 		this.stock = stock;
 		this.shop = shop;
+		this.active = true;
 	}
 
+
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
 
 	public Long getId() {
 		return id;
@@ -89,4 +99,6 @@ public class Product {
 	public void setShop(Shop shop) {
 		this.shop = shop;
 	}
+	
+	
 }

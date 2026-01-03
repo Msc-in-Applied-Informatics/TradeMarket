@@ -38,6 +38,7 @@ public class ProductService {
 	            pMap.put("stock", product.getStock());
 	            pMap.put("shopAfm", product.getShop().getAfm());
 	            pMap.put("shopName", product.getShop().getName());
+	            pMap.put("active", product.isActive());
 	            
 	            return pMap;
 	        }).collect(Collectors.toList());
@@ -192,7 +193,8 @@ public class ProductService {
 	                response.put("message", "You cannot remove a product that belongs to another shop!");
 	                return response;
 	  			}
-		 		prodRepo.delete(existingProduct);
+	  			existingProduct.setActive(false);
+		 		prodRepo.save(existingProduct);
 		 		
 	            response.put("status", "success");
 	            response.put("code", 200);
@@ -217,32 +219,82 @@ public class ProductService {
 		return response;
 	}
 	
-	public Map<String, Object> searchProducts(String type, String brand, Double minPrice, Double maxPrice) {
+	public Map<String,Object> revertProduct(ProductDTO p){
 		Map<String, Object> response = new HashMap<>();
-		try {
-			List<Product> allProducts = prodRepo.findAll();
-			List<Product> searchProd = new ArrayList();
-			searchProd = allProducts.stream().filter(p -> (type == null || type.isEmpty() || p.getType().equalsIgnoreCase(type)))
-						        .filter(p -> (brand == null || brand.isEmpty() || p.getBrand().equalsIgnoreCase(brand)))
-						        .filter(p -> (minPrice == null || p.getPrice() >= minPrice))
-						        .filter(p -> (maxPrice == null || p.getPrice() <= maxPrice))
-						        .collect(Collectors.toList());
-			
-			response.put("status", "success");
-            response.put("code", 200);
-            response.put("message", "Look for products with options");
-            response.put("data", searchProd);
-		} catch (AuthenticationException e) {
-            response.put("status", "error");
-            response.put("code", 400);
-            response.put("message", "Bad request");
-        } catch (Exception e) {
-            response.put("status", "error");
-            response.put("code", 500);
-            response.put("message", "Internal server error");
-        }
-
+		try {  
+	  		Optional<Product> byId = prodRepo.findById(p.getId());
+	  		if (byId.isPresent()) {
+	  			Product existingProduct = byId.get();
+	  			if (!existingProduct.getShop().getAfm().equals(p.getShopAfm())) {
+	  				response.put("status", "error");
+	                response.put("code", 403);
+	                response.put("message", "You cannot revert a product that belongs to another shop!");
+	                return response;
+	  			}
+	  			existingProduct.setActive(true);
+		 		prodRepo.save(existingProduct);
+		 		
+	            response.put("status", "success");
+	            response.put("code", 200);
+	            response.put("message", "Product reverted");
+	            response.put("data", p); 	
+		 	}else {
+		 		response.put("status", "error");
+	            response.put("code", 401);
+	            response.put("message", "Product not found with ID: " + p.getId());
+	            response.put("data", p); 
+		 	}
+	    } catch (AuthenticationException e) {
+	        response.put("status", "error");
+	        response.put("code", 400);
+	        response.put("message", "Bad request");
+	    } catch (Exception e) {
+	        response.put("status", "error");
+	        response.put("code", 500);
+	        response.put("message", "Internal server error");
+	    }
+		
 		return response;
+	}
+	
+	public Map<String, Object> searchProducts(String type, String brand, Double minPrice, Double maxPrice, String shopName) {
+	    Map<String, Object> response = new HashMap<>();
+	    try {
+	        List<Product> allProducts = prodRepo.findAll();
+	        
+	        List<Map<String, Object>> searchProdResults = allProducts.stream()
+	            .filter(p -> (type == null || type.isEmpty() || p.getType().equalsIgnoreCase(type)))
+	            .filter(p -> (brand == null || brand.isEmpty() || p.getBrand().equalsIgnoreCase(brand)))
+	            .filter(p -> (minPrice == null || p.getPrice() >= minPrice))
+	            .filter(p -> (maxPrice == null || p.getPrice() <= maxPrice))
+	            .filter(p -> (shopName == null || shopName.isEmpty() || p.getShop().getName().equalsIgnoreCase(shopName)))
+	            .map(product -> {
+	                Map<String, Object> pMap = new HashMap<>();
+	                pMap.put("id", product.getId());
+	                pMap.put("brand", product.getBrand());
+	                pMap.put("type", product.getType());
+	                pMap.put("price", product.getPrice());
+	                pMap.put("description", product.getDescription());
+	                pMap.put("stock", product.getStock());
+	                pMap.put("shopAfm", product.getShop().getAfm()); 
+	                pMap.put("shopName", product.getShop().getName()); 
+	                pMap.put("active", product.isActive());
+	                return pMap;
+	            })
+	            .collect(Collectors.toList());
+
+	        response.put("status", "success");
+	        response.put("code", 200);
+	        response.put("message", "Search results with shop details");
+	        response.put("data", searchProdResults);
+	        
+	    } catch (Exception e) {
+	        response.put("status", "error");
+	        response.put("code", 500);
+	        response.put("message", "Internal server error: " + e.getMessage());
+	    }
+
+	    return response;
 	}
 
 	private boolean productIsExist(ProductDTO p) {

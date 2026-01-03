@@ -25,7 +25,7 @@ public class Order {
     @ManyToOne
     private Citizen citizen; 
 
-	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
 	@JsonManagedReference
     private List<OrderItem> items;
 	

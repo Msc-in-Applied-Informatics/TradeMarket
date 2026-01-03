@@ -29,6 +29,13 @@ public class ShoppingController {
         return ResponseEntity.status(code).body(result);
     }
 	
+	@PostMapping("/cart/remove")
+	public ResponseEntity<Map<String, Object>> removeFromCart(@RequestBody CartDTO cart) throws Exception {
+	    Map<String, Object> result = shoppingService.removeFromCart(cart.getProductId(), cart.getAfm());
+	    int code = (int) result.get("code");
+	    return ResponseEntity.status(code).body(result);
+	}
+	
 	@GetMapping("/cart/my-cart/{afm}")
 	public ResponseEntity<Map<String, Object>> getMyCart(@PathVariable String afm) {
 	    Map<String, Object> result = shoppingService.getCart(afm);

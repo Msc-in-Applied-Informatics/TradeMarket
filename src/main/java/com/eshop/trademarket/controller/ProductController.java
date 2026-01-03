@@ -73,15 +73,24 @@ public class ProductController {
         return ResponseEntity.status(code).body(result);
 	}
 	
+	@PostMapping("/product/revert")
+	public ResponseEntity<Map<String, Object>> revertProduct(@RequestBody ProductDTO product) throws Exception {
+		Map<String, Object> result = productService.revertProduct(product);
+
+        int code = (int) result.get("code");
+        return ResponseEntity.status(code).body(result);
+	}
+	
 	@GetMapping("/search")
 	public ResponseEntity<Map<String, Object>> search(
 	    @RequestParam(required = false) String type,
 	    @RequestParam(required = false) String brand,
 	    @RequestParam(required = false) Double minPrice,
-	    @RequestParam(required = false) Double maxPrice) {
+	    @RequestParam(required = false) Double maxPrice,
+		@RequestParam(required = false) String shopName){
 	    
 	    
-		Map<String, Object> result = productService.searchProducts(type, brand, minPrice, maxPrice);
+		Map<String, Object> result = productService.searchProducts(type, brand, minPrice, maxPrice, shopName);
 
         int code = (int) result.get("code");
         return ResponseEntity.status(code).body(result);
