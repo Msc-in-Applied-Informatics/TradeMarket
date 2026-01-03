@@ -170,25 +170,29 @@ public class ShoppingService {
 	
 	public Map<String,Object> getShopSales(String shopAfm) {
 		Map<String, Object> response = new HashMap<>();
-		
 		try {
-			List<OrderItem> allItems = orderItemRepo.findAll().stream()
-		            .filter(item -> item.getShop().getAfm().equals(shopAfm))
-		            .collect(Collectors.toList());
-		   
-			response.put("status", "success");
-            response.put("code", 200);
-            response.put("message", "History of sales");
-            response.put("data", allItems);            
-		} catch (AuthenticationException e) {
-            response.put("status", "error");
-            response.put("code", 400);
-            response.put("message", "Bad request");
-        } catch (Exception e) {
-            response.put("status", "error");
-            response.put("code", 500);
-            response.put("message", "Internal server error");
-        }
+	        List<Map<String, Object>> customItems = orderItemRepo.findAll().stream()
+	            .filter(item -> item.getShop().getAfm().equals(shopAfm))
+	            .map(item -> {
+	                Map<String, Object> map = new HashMap<>();
+	                map.put("id", item.getId());
+	                map.put("priceAtPurchase", item.getPriceAtPurchase());
+	                map.put("product", item.getProduct());
+	                if (item.getOrder() != null && item.getOrder().getCitizen() != null) {
+	                    map.put("citizenAfm", item.getOrder().getCitizen().getAfm());
+	                    map.put("citizenName", item.getOrder().getCitizen().getName()+ " " + item.getOrder().getCitizen().getSurname());
+	                }
+	                return map;
+	            })
+	            .collect(Collectors.toList());
+
+	        response.put("status", "success");
+	        response.put("code", 200);
+	        response.put("data", customItems);
+	    } catch (Exception e) {
+	        response.put("status", "error");
+	        response.put("code", 500);
+	    }
 	    
 	    return response;
     }
