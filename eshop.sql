@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Φιλοξενητής: 127.0.0.1
--- Χρόνος δημιουργίας: 05 Ιαν 2026 στις 17:17:22
+-- Χρόνος δημιουργίας: 01 Φεβ 2026 στις 14:43:36
 -- Έκδοση διακομιστή: 10.4.14-MariaDB
 -- Έκδοση PHP: 7.2.34
 
@@ -39,7 +39,8 @@ CREATE TABLE `cart` (
 INSERT INTO `cart` (`id`, `total_price`) VALUES
 (1, 0),
 (4, 0),
-(5, 1.83);
+(5, 7.32),
+(6, 3.69);
 
 -- --------------------------------------------------------
 
@@ -57,7 +58,13 @@ CREATE TABLE `cart_products` (
 --
 
 INSERT INTO `cart_products` (`cart_id`, `product_id`) VALUES
-(5, 2);
+(5, 2),
+(5, 2),
+(5, 2),
+(5, 2),
+(6, 1),
+(6, 1),
+(6, 1);
 
 -- --------------------------------------------------------
 
@@ -80,6 +87,7 @@ CREATE TABLE `citizen` (
 --
 
 INSERT INTO `citizen` (`afm`, `email`, `name`, `password`, `role`, `surname`, `cart_id`) VALUES
+('123456', 'kara@test.com', 'Νίκος', '123456', 'CITIZEN', 'Καρανικόλας', 6),
 ('125796632', 'karanik@arx.gr', 'NIKOLAOS', '123456', 'CITIZEN', 'KARANIKOLAS', 5),
 ('2222', 'kara@test.com', 'Νίκος', '123456', 'CITIZEN', 'Καρανικόλας', 1),
 ('6666', 'eleni@test.com', 'Ελένη', '123456', 'CITIZEN', 'Παπά', 4);
@@ -172,7 +180,8 @@ INSERT INTO `product` (`id`, `brand`, `description`, `price`, `stock`, `type`, `
 (11, 'Nescafe', 'Classic 200γρ', 7.8, 25, 'Καφέδες', '4444', b'1'),
 (12, 'Ariel', 'Υγρό Απορρυπαντικό 70 μεζούρες', 14.5, 9, 'Καθαριστικά', '4444', b'1'),
 (13, 'Terra Creta', 'Εξαιρετικό Παρθένο Ελαιόλαδο 1L', 9.3, 15, 'Λάδια', '4444', b'1'),
-(14, 'Isco', 'no.06 παστιτσιο', 0.84, 0, 'Μακαρόνια', '1111', b'1');
+(14, 'Isco', 'no.06 παστιτσιο', 0.84, 0, 'Μακαρόνια', '1111', b'1'),
+(15, 'TEST', 'TEST', 20, 20, 'TEST', '125796631', b'1');
 
 -- --------------------------------------------------------
 
@@ -197,7 +206,8 @@ INSERT INTO `shop` (`afm`, `email`, `name`, `password`, `role`, `owner`) VALUES
 ('1111', 'info@lg.gr', 'Geo', '123456', 'SHOP', 'Polyzoidou'),
 ('125796631', 'nikolakis95@hotmail.com', 'STORE NK', '123456', 'SHOP', 'Karanikolas Nikolaos'),
 ('3333', 'contact@electronix.gr', 'ElectroWorld', '123456', 'SHOP', 'Παπαδόπουλος'),
-('4444', 'sales@supermarket-alpha.gr', 'Alpha Market', '123456', 'SHOP', 'Δημητρίου');
+('4444', 'sales@supermarket-alpha.gr', 'Alpha Market', '123456', 'SHOP', 'Δημητρίου'),
+('654321', 'info@lg.gr', 'Geo', '123456', 'SHOP', 'τεστ');
 
 --
 -- Ευρετήρια για άχρηστους πίνακες
@@ -260,7 +270,7 @@ ALTER TABLE `shop`
 -- AUTO_INCREMENT για πίνακα `cart`
 --
 ALTER TABLE `cart`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
 -- AUTO_INCREMENT για πίνακα `orders`
@@ -278,7 +288,7 @@ ALTER TABLE `order_item`
 -- AUTO_INCREMENT για πίνακα `product`
 --
 ALTER TABLE `product`
-  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- Περιορισμοί για άχρηστους πίνακες
